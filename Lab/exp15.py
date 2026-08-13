@@ -1,0 +1,59 @@
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Load image
+img = cv2.imread('/Users/rohith/Desktop/COMPUTER VISION/Screenshot 2026-07-20 at 11.36.06 AM.png')
+
+# Check if image is loaded
+if img is None:
+    print("Error: Could not load image. Check the file path.")
+else:
+    # Convert BGR to RGB
+    rgb_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+    # Convert image pixels to float32
+    pixels = np.float32(rgb_img.reshape((-1, 3)))
+
+    # Define K-Means criteria
+    criteria = (
+        cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER,
+        100,
+        0.2
+    )
+
+    # Number of clusters
+    K = 3
+
+    # Apply K-Means
+    _, labels, centers = cv2.kmeans(
+        pixels,
+        K,
+        None,
+        criteria,
+        10,
+        cv2.KMEANS_RANDOM_CENTERS
+    )
+
+    # Convert centers to uint8
+    centers = np.uint8(centers)
+
+    # Create segmented image
+    segmented_img = centers[labels.flatten()]
+    segmented_img = segmented_img.reshape(rgb_img.shape)
+
+    # Display original and segmented images
+    plt.figure(figsize=(10, 5))
+
+    plt.subplot(1, 2, 1)
+    plt.imshow(rgb_img)
+    plt.title("Original Image")
+    plt.axis("off")
+
+    plt.subplot(1, 2, 2)
+    plt.imshow(segmented_img)
+    plt.title("Segmented Image (K-Means)")
+    plt.axis("off")
+
+    plt.tight_layout()
+    plt.show()
